@@ -29,9 +29,8 @@
 
 #include "rtmp_sys.h"
 #include "log.h"
-
-int RTMP_ParseURL(const char *url, int *protocol, AVal *host, unsigned int *port,
-	AVal *playpath, AVal *app)
+/**处理URL*/
+int RTMP_ParseURL(const char *url, int *protocol, AVal *host, unsigned int *port,AVal *playpath, AVal *app)
 {
 	char *p, *end, *col, *ques, *slash;
 
@@ -48,31 +47,32 @@ int RTMP_ParseURL(const char *url, int *protocol, AVal *host, unsigned int *port
 
 	/* look for usual :// pattern */
 	p = strstr(url, "://");
-	if(!p) {
+	if(!p) 
+	{
 		RTMP_Log(RTMP_LOGERROR, "RTMP URL: No :// in url!");
 		return FALSE;
 	}
 	{
-	int len = (int)(p-url);
+		int len = (int)(p-url);
 
-	if(len == 4 && strncasecmp(url, "rtmp", 4)==0)
-		*protocol = RTMP_PROTOCOL_RTMP;
-	else if(len == 5 && strncasecmp(url, "rtmpt", 5)==0)
-		*protocol = RTMP_PROTOCOL_RTMPT;
-	else if(len == 5 && strncasecmp(url, "rtmps", 5)==0)
-	        *protocol = RTMP_PROTOCOL_RTMPS;
-	else if(len == 5 && strncasecmp(url, "rtmpe", 5)==0)
-	        *protocol = RTMP_PROTOCOL_RTMPE;
-	else if(len == 5 && strncasecmp(url, "rtmfp", 5)==0)
-	        *protocol = RTMP_PROTOCOL_RTMFP;
-	else if(len == 6 && strncasecmp(url, "rtmpte", 6)==0)
-	        *protocol = RTMP_PROTOCOL_RTMPTE;
-	else if(len == 6 && strncasecmp(url, "rtmpts", 6)==0)
-	        *protocol = RTMP_PROTOCOL_RTMPTS;
-	else {
-		RTMP_Log(RTMP_LOGWARNING, "Unknown protocol!\n");
-		goto parsehost;
-	}
+		if(len == 4 && strncasecmp(url, "rtmp", 4)==0)
+			*protocol = RTMP_PROTOCOL_RTMP;
+		else if(len == 5 && strncasecmp(url, "rtmpt", 5)==0)
+			*protocol = RTMP_PROTOCOL_RTMPT;
+		else if(len == 5 && strncasecmp(url, "rtmps", 5)==0)
+				*protocol = RTMP_PROTOCOL_RTMPS;
+		else if(len == 5 && strncasecmp(url, "rtmpe", 5)==0)
+				*protocol = RTMP_PROTOCOL_RTMPE;
+		else if(len == 5 && strncasecmp(url, "rtmfp", 5)==0)
+				*protocol = RTMP_PROTOCOL_RTMFP;
+		else if(len == 6 && strncasecmp(url, "rtmpte", 6)==0)
+				*protocol = RTMP_PROTOCOL_RTMPTE;
+		else if(len == 6 && strncasecmp(url, "rtmpts", 6)==0)
+				*protocol = RTMP_PROTOCOL_RTMPTS;
+		else {
+			RTMP_Log(RTMP_LOGWARNING, "Unknown protocol!\n");
+			goto parsehost;
+		}
 	}
 
 	RTMP_Log(RTMP_LOGDEBUG, "Parsed protocol: %d", *protocol);
@@ -194,7 +194,9 @@ parsehost:
  * mp3 streams: prepend "mp3:", remove extension
  * flv streams: remove extension
  */
-void RTMP_ParsePlaypath(AVal *in, AVal *out) {
+/**处理播放路径*/
+void RTMP_ParsePlaypath(AVal *in, AVal *out) 
+{
 	int addMP4 = 0;
 	int addMP3 = 0;
 	int subExt = 0;

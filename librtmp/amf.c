@@ -35,50 +35,47 @@
 static const AMFObjectProperty AMFProp_Invalid = { {0, 0}, AMF_INVALID };
 static const AVal AV_empty = { 0, 0 };
 
-/* Data is Big-Endian */
-unsigned short
-AMF_DecodeInt16(const char *data)
+/**这里处理的都是大端格式*/
+/**将大端格式的数据转换为16位的数据*/
+unsigned short AMF_DecodeInt16(const char *data)
 {
   unsigned char *c = (unsigned char *) data;
   unsigned short val;
   val = (c[0] << 8) | c[1];
   return val;
 }
-
-unsigned int
-AMF_DecodeInt24(const char *data)
+/**将大端格式存储的字符串数据转换为24位的数据*/
+unsigned int AMF_DecodeInt24(const char *data)
 {
   unsigned char *c = (unsigned char *) data;
   unsigned int val;
   val = (c[0] << 16) | (c[1] << 8) | c[2];
   return val;
 }
-
-unsigned int
-AMF_DecodeInt32(const char *data)
+/**将大端格式存储的字符串数据转换为32位的数据*/
+unsigned int AMF_DecodeInt32(const char *data)
 {
   unsigned char *c = (unsigned char *)data;
   unsigned int val;
   val = (c[0] << 24) | (c[1] << 16) | (c[2] << 8) | c[3];
   return val;
 }
-
-void
-AMF_DecodeString(const char *data, AVal *bv)
+/**将字符串转换为AVal类型的数据*/
+void AMF_DecodeString(const char *data, AVal *bv)
 {
   bv->av_len = AMF_DecodeInt16(data);
   bv->av_val = (bv->av_len > 0) ? (char *)data + 2 : NULL;
 }
-
-void
-AMF_DecodeLongString(const char *data, AVal *bv)
+/**将字符串转换为AVal类型的数据*/
+void AMF_DecodeLongString(const char *data, AVal *bv)
 {
   bv->av_len = AMF_DecodeInt32(data);
   bv->av_val = (bv->av_len > 0) ? (char *)data + 4 : NULL;
 }
-
-double
-AMF_DecodeNumber(const char *data)
+/**将字符串转换为double类型的数据
+ * 适用于大端格式和小端格式
+ * */
+double AMF_DecodeNumber(const char *data)
 {
   double dVal;
 #if __FLOAT_WORD_ORDER == __BYTE_ORDER
@@ -126,41 +123,43 @@ AMF_DecodeNumber(const char *data)
 #endif
   return dVal;
 }
-
-int
-AMF_DecodeBoolean(const char *data)
+/**将字符串转换为bool类型的数据*/
+int AMF_DecodeBoolean(const char *data)
 {
   return *data != 0;
 }
-
-char *
-AMF_EncodeInt16(char *output, char *outend, short nVal)
+/**将16位的数据转换为字符串，大端格式*/
+char *AMF_EncodeInt16(char *output, char *outend, short nVal)
 {
   if (output+2 > outend)
+  {
     return NULL;
+  }
 
   output[1] = nVal & 0xff;
   output[0] = nVal >> 8;
   return output+2;
 }
-
-char *
-AMF_EncodeInt24(char *output, char *outend, int nVal)
+/**将32位的数据只取低24位转换为大端格式的字符串形式*/
+char *AMF_EncodeInt24(char *output, char *outend, int nVal)
 {
   if (output+3 > outend)
+  {
     return NULL;
+  }
 
   output[2] = nVal & 0xff;
   output[1] = nVal >> 8;
   output[0] = nVal >> 16;
   return output+3;
 }
-
-char *
-AMF_EncodeInt32(char *output, char *outend, int nVal)
+/**将32位的整数转换为大端格式的字符串形式*/
+char *AMF_EncodeInt32(char *output, char *outend, int nVal)
 {
   if (output+4 > outend)
+  {
     return NULL;
+  }
 
   output[3] = nVal & 0xff;
   output[2] = nVal >> 8;
@@ -168,37 +167,38 @@ AMF_EncodeInt32(char *output, char *outend, int nVal)
   output[0] = nVal >> 24;
   return output+4;
 }
-
-char *
-AMF_EncodeString(char *output, char *outend, const AVal *bv)
+/**将AVal类型的数据转换为字符串形式*/
+char *AMF_EncodeString(char *output, char *outend, const AVal *bv)
 {
-  if ((bv->av_len < 65536 && output + 1 + 2 + bv->av_len > outend) ||
-	output + 1 + 4 + bv->av_len > outend)
+  if ((bv->av_len < 65536 && output + 1 + 2 + bv->av_len > outend) ||output + 1 + 4 + bv->av_len > outend)
+  {
     return NULL;
+  }
 
   if (bv->av_len < 65536)
-    {
-      *output++ = AMF_STRING;
+  {
+    *output++ = AMF_STRING;
 
-      output = AMF_EncodeInt16(output, outend, bv->av_len);
-    }
+    output = AMF_EncodeInt16(output, outend, bv->av_len);
+  }
   else
-    {
-      *output++ = AMF_LONG_STRING;
+  {
+    *output++ = AMF_LONG_STRING;
 
-      output = AMF_EncodeInt32(output, outend, bv->av_len);
-    }
+    output = AMF_EncodeInt32(output, outend, bv->av_len);
+  }
   memcpy(output, bv->av_val, bv->av_len);
   output += bv->av_len;
 
   return output;
 }
-
-char *
-AMF_EncodeNumber(char *output, char *outend, double dVal)
+/**将double类型的数据转换为字符串形式*/
+char *AMF_EncodeNumber(char *output, char *outend, double dVal)
 {
   if (output+1+8 > outend)
+  {
     return NULL;
+  }
 
   *output++ = AMF_NUMBER;	/* type: Number */
 
@@ -254,12 +254,13 @@ AMF_EncodeNumber(char *output, char *outend, double dVal)
 
   return output+8;
 }
-
-char *
-AMF_EncodeBoolean(char *output, char *outend, int bVal)
+/**将bool型的数据转换为字符串形式*/
+char *AMF_EncodeBoolean(char *output, char *outend, int bVal)
 {
   if (output+2 > outend)
+  {
     return NULL;
+  }
 
   *output++ = AMF_BOOLEAN;
 
@@ -267,12 +268,13 @@ AMF_EncodeBoolean(char *output, char *outend, int bVal)
 
   return output;
 }
-
-char *
-AMF_EncodeNamedString(char *output, char *outend, const AVal *strName, const AVal *strValue)
+/***/
+char *AMF_EncodeNamedString(char *output, char *outend, const AVal *strName, const AVal *strValue)
 {
   if (output+2+strName->av_len > outend)
+  {
     return NULL;
+  }
   output = AMF_EncodeInt16(output, outend, strName->av_len);
 
   memcpy(output, strName->av_val, strName->av_len);
@@ -281,11 +283,12 @@ AMF_EncodeNamedString(char *output, char *outend, const AVal *strName, const AVa
   return AMF_EncodeString(output, outend, strValue);
 }
 
-char *
-AMF_EncodeNamedNumber(char *output, char *outend, const AVal *strName, double dVal)
+char *AMF_EncodeNamedNumber(char *output, char *outend, const AVal *strName, double dVal)
 {
   if (output+2+strName->av_len > outend)
+  {
     return NULL;
+  }
   output = AMF_EncodeInt16(output, outend, strName->av_len);
 
   memcpy(output, strName->av_val, strName->av_len);
@@ -1177,8 +1180,7 @@ AMF3CD_AddProp(AMF3ClassDef *cd, AVal *prop)
   cd->cd_props[cd->cd_num++] = *prop;
 }
 
-AVal *
-AMF3CD_GetProp(AMF3ClassDef *cd, int nIndex)
+AVal *AMF3CD_GetProp(AMF3ClassDef *cd, int nIndex)
 {
   if (nIndex >= cd->cd_num)
     return (AVal *)&AV_empty;

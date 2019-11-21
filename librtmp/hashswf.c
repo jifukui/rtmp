@@ -345,18 +345,17 @@ static int tzoff;
 static int tzchecked;
 
 #define	JAN02_1980	318340800
-
+/**定义12月份的简写*/
 static const char *monthtab[12] = { "Jan", "Feb", "Mar",
   "Apr", "May", "Jun",
   "Jul", "Aug", "Sep",
   "Oct", "Nov", "Dec"
 };
-static const char *days[] =
-  { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+/**定义星期的简写*/
+static const char *days[] ={ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 
 /* Parse an HTTP datestamp into Unix time */
-static time_t
-make_unix_time(char *s)
+static time_t make_unix_time(char *s)
 {
   struct tm time;
   int i, ysub = 1900, fmt = 0;

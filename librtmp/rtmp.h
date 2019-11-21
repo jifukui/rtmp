@@ -207,7 +207,7 @@ typedef struct RTMPPacket
     AVal name;
     int num;
   } RTMP_METHOD;
-  /**RTMP*/
+  /**RTMP 数据类型*/
   typedef struct RTMP
   {
     int m_inChunkSize;
