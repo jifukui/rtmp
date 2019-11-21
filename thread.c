@@ -38,8 +38,8 @@ ThreadCreate(thrfunc *routine, void *args)
   return thd;
 }
 #else
-pthread_t
-ThreadCreate(thrfunc *routine, void *args)
+/**创建线程*/
+pthread_t ThreadCreate(thrfunc *routine, void *args)
 {
   pthread_t id = 0;
   pthread_attr_t attributes;
@@ -48,10 +48,11 @@ ThreadCreate(thrfunc *routine, void *args)
   pthread_attr_init(&attributes);
   pthread_attr_setdetachstate(&attributes, PTHREAD_CREATE_DETACHED);
 
-  ret =
-    pthread_create(&id, &attributes, routine, args);
+  ret =pthread_create(&id, &attributes, routine, args);
   if (ret != 0)
+  {
     RTMP_LogPrintf("%s, pthread_create failed with %d\n", __FUNCTION__, ret);
+  }
 
   return id;
 }

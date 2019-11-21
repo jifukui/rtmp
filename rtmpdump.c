@@ -51,9 +51,8 @@
 #define DEF_BUFTIME	(10 * 60 * 60 * 1000)	/* 10 hours default */
 #define DEF_SKIPFRM	0
 
-// starts sockets
-int
-InitSockets()
+/**套接字初始化*/
+int InitSockets()
 {
 #ifdef WIN32
   WORD version;
@@ -87,9 +86,8 @@ uint32_t nIgnoredFrameCounter = 0;
 #define MAX_IGNORED_FRAMES	50
 
 FILE *file = 0;
-
-void
-sigIntHandler(int sig)
+/**INT信号的处理*/
+void sigIntHandler(int sig)
 {
   RTMP_ctrlC = TRUE;
   RTMP_LogPrintf("Caught signal: %d, cleaning up, just a second...\n", sig);
@@ -707,9 +705,8 @@ void usage(char *prog)
 	    ("If you don't pass parameters for swfUrl, pageUrl, or auth these properties will not be included in the connect ");
 	  RTMP_LogPrintf("packet.\n\n");
 }
-
-int
-main(int argc, char **argv)
+/**主函数*/
+int main(int argc, char **argv)
 {
   extern char *optarg;
 
@@ -775,30 +772,29 @@ main(int argc, char **argv)
   signal(SIGQUIT, sigIntHandler);
 #endif
 
-  RTMP_debuglevel = RTMP_LOGINFO;
+  	RTMP_debuglevel = RTMP_LOGINFO;
 
-  // Check for --quiet option before printing any output
-  int index = 0;
-  while (index < argc)
+  	// Check for --quiet option before printing any output
+  	int index = 0;
+  	while (index < argc)
     {
-      if (strcmp(argv[index], "--quiet") == 0
-	  || strcmp(argv[index], "-q") == 0)
-	RTMP_debuglevel = RTMP_LOGCRIT;
-      index++;
+      	if (strcmp(argv[index], "--quiet") == 0|| strcmp(argv[index], "-q") == 0)
+		{
+			RTMP_debuglevel = RTMP_LOGCRIT;
+		}
+      	index++;
     }
 
-  RTMP_LogPrintf("RTMPDump %s\n", RTMPDUMP_VERSION);
-  RTMP_LogPrintf
-    ("(c) 2010 Andrej Stepanchuk, Howard Chu, The Flvstreamer Team; license: GPL\n");
-
-  if (!InitSockets())
-    {
-      RTMP_Log(RTMP_LOGERROR,
-	  "Couldn't load sockets support on your platform, exiting!");
-      return RD_FAILED;
+  	RTMP_LogPrintf("RTMPDump %s\n", RTMPDUMP_VERSION);
+  	RTMP_LogPrintf("(c) 2010 Andrej Stepanchuk, Howard Chu, The Flvstreamer Team; license: GPL\n");
+	/**对于非 Windows环境下没有作用*/
+  	if (!InitSockets())
+	{
+      	RTMP_Log(RTMP_LOGERROR,"Couldn't load sockets support on your platform, exiting!");
+      	return RD_FAILED;
     }
 
-  /* sleep(30); */
+  	/* sleep(30); */
 
   RTMP_Init(&rtmp);
 

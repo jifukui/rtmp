@@ -81,28 +81,28 @@ extern "C"
 #define RTMP_PACKET_SIZE_MEDIUM   1
 #define RTMP_PACKET_SIZE_SMALL    2
 #define RTMP_PACKET_SIZE_MINIMUM  3
-
-  typedef struct RTMPChunk
-  {
-    int c_headerSize;
-    int c_chunkSize;
-    char *c_chunk;
-    char c_header[RTMP_MAX_HEADER_SIZE];
-  } RTMPChunk;
-
-  typedef struct RTMPPacket
-  {
-    uint8_t m_headerType;
-    uint8_t m_packetType;
-    uint8_t m_hasAbsTimestamp;	/* timestamp absolute or relative? */
-    int m_nChannel;
-    uint32_t m_nTimeStamp;	/* timestamp */
-    int32_t m_nInfoField2;	/* last 4 bytes in a long header */
-    uint32_t m_nBodySize;
-    uint32_t m_nBytesRead;
-    RTMPChunk *m_chunk;
-    char *m_body;
-  } RTMPPacket;
+/***/
+typedef struct RTMPChunk
+{
+  int c_headerSize;
+  int c_chunkSize;
+  char *c_chunk;
+  char c_header[RTMP_MAX_HEADER_SIZE];
+} RTMPChunk;
+/**RTMP的包结构*/
+typedef struct RTMPPacket
+{
+  uint8_t m_headerType;
+  uint8_t m_packetType;
+  uint8_t m_hasAbsTimestamp;	/* timestamp absolute or relative? */
+  int m_nChannel;
+  uint32_t m_nTimeStamp;	/* timestamp */
+  int32_t m_nInfoField2;	/* last 4 bytes in a long header */
+  uint32_t m_nBodySize;
+  uint32_t m_nBytesRead;
+  RTMPChunk *m_chunk;
+  char *m_body;
+} RTMPPacket;
 
   typedef struct RTMPSockBuf
   {
@@ -207,7 +207,7 @@ extern "C"
     AVal name;
     int num;
   } RTMP_METHOD;
-
+  /**RTMP*/
   typedef struct RTMP
   {
     int m_inChunkSize;
@@ -254,8 +254,7 @@ extern "C"
     RTMP_LNK Link;
   } RTMP;
 
-  int RTMP_ParseURL(const char *url, int *protocol, AVal *host,
-		     unsigned int *port, AVal *playpath, AVal *app);
+  int RTMP_ParseURL(const char *url, int *protocol, AVal *host,unsigned int *port, AVal *playpath, AVal *app);
 
   void RTMP_ParsePlaypath(AVal *in, AVal *out);
   void RTMP_SetBufferMS(RTMP *r, int size);

@@ -4,7 +4,7 @@
 │  README
 │  rtmpdump.1
 │  rtmpdump.1.html
-│  rtmpdump.c
+│  rtmpdump.c                   内部包含主函数
 │  rtmpgw.8
 │  rtmpgw.8.html
 │  rtmpgw.c
@@ -27,7 +27,7 @@
         librtmp.3
         librtmp.3.html
         librtmp.pc.in
-        log.c
+        log.c                   输出信息相关
         log.h
         Makefile
         parseurl.c

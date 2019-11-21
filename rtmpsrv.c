@@ -293,9 +293,8 @@ SendPlayStart(RTMP *r)
   packet.m_nBodySize = enc - packet.m_body;
   return RTMP_SendPacket(r, &packet, FALSE);
 }
-
-static int
-SendPlayStop(RTMP *r)
+/**发送停止播放信号*/
+static int SendPlayStop(RTMP *r)
 {
   RTMPPacket packet;
   char pbuf[384], *pend = pbuf+sizeof(pbuf);
@@ -326,8 +325,7 @@ SendPlayStop(RTMP *r)
   return RTMP_SendPacket(r, &packet, FALSE);
 }
 
-static void
-spawn_dumper(int argc, AVal *av, char *cmd)
+static void spawn_dumper(int argc, AVal *av, char *cmd)
 {
 #ifdef WIN32
   STARTUPINFO si = {0};
@@ -344,23 +342,26 @@ spawn_dumper(int argc, AVal *av, char *cmd)
   /* reap any dead children */
   while (waitpid(-1, NULL, WNOHANG) > 0);
 
-  if (fork() == 0) {
+  if (fork() == 0) 
+  {
     char **argv = malloc((argc+1) * sizeof(char *));
     int i;
 
-    for (i=0; i<argc; i++) {
+    for (i=0; i<argc; i++) 
+    {
       argv[i] = av[i].av_val;
       argv[i][av[i].av_len] = '\0';
     }
     argv[i] = NULL;
     if ((i = execvp(argv[0], argv)))
+    {
       _exit(i);
+    }
   }
 #endif
 }
 
-static int
-countAMF(AMFObject *obj, int *argc)
+static int countAMF(AMFObject *obj, int *argc)
 {
   int i, len;
 
@@ -398,8 +399,7 @@ countAMF(AMFObject *obj, int *argc)
   return len;
 }
 
-static char *
-dumpAMF(AMFObject *obj, char *ptr, AVal *argv, int *argc)
+static char * dumpAMF(AMFObject *obj, char *ptr, AVal *argv, int *argc)
 {
   int i, len, ac = *argc;
   const char opt[] = "NBSO Z";
@@ -457,8 +457,7 @@ dumpAMF(AMFObject *obj, char *ptr, AVal *argv, int *argc)
 }
 
 // Returns 0 for OK/Failed/error, 1 for 'Stop or Complete'
-int
-ServeInvoke(STREAMING_SERVER *server, RTMP * r, RTMPPacket *packet, unsigned int offset)
+int ServeInvoke(STREAMING_SERVER *server, RTMP * r, RTMPPacket *packet, unsigned int offset)
 {
   const char *body;
   unsigned int nBodySize;
@@ -735,8 +734,7 @@ ServeInvoke(STREAMING_SERVER *server, RTMP * r, RTMPPacket *packet, unsigned int
   return ret;
 }
 
-int
-ServePacket(STREAMING_SERVER *server, RTMP *r, RTMPPacket *packet)
+int ServePacket(STREAMING_SERVER *server, RTMP *r, RTMPPacket *packet)
 {
   int ret = 0;
 
@@ -1030,8 +1028,7 @@ stopStreaming(STREAMING_SERVER * server)
 }
 
 
-void
-sigIntHandler(int sig)
+void sigIntHandler(int sig)
 {
   RTMP_ctrlC = TRUE;
   RTMP_LogPrintf("Caught signal: %d, cleaning up, just a second...\n", sig);
@@ -1040,8 +1037,7 @@ sigIntHandler(int sig)
   signal(SIGINT, SIG_DFL);
 }
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   int nStatus = RD_SUCCESS;
 
